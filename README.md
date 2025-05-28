@@ -1,163 +1,118 @@
-# Screen-Space Edge Detection Outline System
+# 🎯 URP Screen-Space Outline System
 
-This folder contains a modern screen-space edge detection outline system for Unity URP that provides clean, crisp outlines like those seen in RTS games and modern titles. This system uses **Rendering Layers** to properly isolate outlined objects.
+> **Clean, crisp outlines for Unity URP** - Perfect for RTS games, selection systems, and modern UI feedback
 
-## Files
+[![Unity](https://img.shields.io/badge/Unity-2022.3+-000000.svg?logo=unity)](https://unity.com/)
+[![URP](https://img.shields.io/badge/URP-12.0+-blue.svg)](https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@latest)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-- `EdgeDetectionOutlineFeature.cs` - URP Renderer Feature that implements the screen-space outline effect
-- `EdgeDetectionOutline.shader` - Shader that performs Sobel edge detection on depth, normal, and color buffers
-- `OutlineObject.cs` - Component for controlling which objects get outlined using Rendering Layers
-- `README.md` - This documentation file
+## ✨ Features
 
-## Setup Instructions
+- 🎯 **Selective Outlining** - Only outline what you want
+- ⚡ **Performance Optimized** - Two-pass rendering with smart culling
+- 🎨 **Highly Configurable** - Fine-tune depth, normal, and color sensitivity
+- 🔧 **No Material Changes** - Works with any existing materials
+- 🎮 **Runtime Control** - Enable/disable outlines dynamically
+- 🚀 **Modern URP Integration** - Built for Universal Render Pipeline
 
-### 1. Add the Renderer Feature
+## 🚀 Quick Start
 
-1. Open your **Universal Renderer Data** asset (usually in `Assets/Settings/`)
-2. Click **"Add Renderer Feature"**
-3. Select **"Edge Detection Outline Feature"**
-4. Configure the settings in the inspector:
-   - **Outline Color**: Color of the outlines
-   - **Outline Thickness**: Width of the outline effect
-   - **Depth/Normal/Color Sensitivity**: How sensitive the edge detection is for each buffer
-   - **Outline Rendering Layer Mask**: Which rendering layer(s) to apply outlines to (default: 1)
+### 1. Setup Renderer Feature
+1. Open your **Universal Renderer Data** asset
+2. Add **"Edge Detection Outline Feature"**
+3. Configure your outline settings
 
 ### 2. Enable Required Buffers
+In your **URP Asset**, enable:
+- ✅ **Depth Texture**
+- ✅ **Opaque Texture**
 
-Make sure your URP asset has the following enabled:
-- **Depth Texture**: Enabled
-- **Opaque Texture**: Enabled (for color-based edge detection)
+### 3. Add to GameObjects
+```csharp
+// Add OutlineObject component to any GameObject
+var outline = gameObject.AddComponent<OutlineObject>();
+outline.SetOutlineEnabled(true);
+```
 
-You can find these settings in your **Universal Render Pipeline Asset**.
+## 📁 What's Included
 
-### 3. Add OutlineObject Components
+| File | Purpose |
+|------|---------|
+| `EdgeDetectionOutlineFeature.cs` | URP Renderer Feature implementation |
+| `EdgeDetectionOutline.shader` | Sobel edge detection shader |
+| `OutlineObject.cs` | Component for controlling outlined objects |
 
-To control which specific objects get outlined:
-
-1. Add the `OutlineObject` component to GameObjects you want outlined
-2. Set the **Outline Rendering Layer** (default: 0, which corresponds to rendering layer mask 1)
-3. Make sure the **Outline Rendering Layer Mask** in the Renderer Feature matches (e.g., if using layer 0, set mask to 1)
-
-## How It Works
-
-This system uses a **two-pass approach** with **Rendering Layers**:
-
-### **Pass 1: Render Outline Objects**
-- Only renders objects with the specified rendering layer to separate textures
-- Creates isolated color, depth, and normal buffers for outline objects only
-- Uses Unity's rendering layer filtering system
-
-### **Pass 2: Edge Detection & Compositing**
-- Applies **Sobel edge detection** only to the outline object textures
-- Detects edges based on depth, normal, and color discontinuities
-- Composites the outline back onto the main scene
-
-This approach ensures that:
-- ✅ Only objects with `OutlineObject` components get outlined
-- ✅ No interference from other scene objects
-- ✅ Clean, precise edge detection
-- ✅ Separation from GameObject layers (used for collisions, etc.)
-
-## Key Features
-
-✅ **Selective Outlining** - Only objects with OutlineObject components get outlined  
-✅ **Rendering Layer Based** - Separate from GameObject layers, won't interfere with collisions  
-✅ **Clean, Crisp Outlines** - Professional quality like modern RTS games  
-✅ **No Material Changes** - Works with any existing materials  
-✅ **Highly Configurable** - Separate sensitivity controls for depth, normals, and color  
-✅ **Performance Optimized** - Two-pass approach with proper culling  
-✅ **URP Integration** - Proper integration with Universal Render Pipeline  
-
-## Configuration Options
+## ⚙️ Configuration
 
 ### Outline Appearance
-- **Outline Color**: RGBA color of the outlines
-- **Outline Thickness**: Controls the sampling distance for edge detection
+- **Color** - RGBA outline color
+- **Thickness** - Edge detection sampling distance
 
 ### Detection Sensitivity
-- **Depth Sensitivity** (0-1): How sensitive to depth changes (good for object silhouettes)
-- **Normal Sensitivity** (0-1): How sensitive to surface angle changes (good for surface details)
-- **Color Sensitivity** (0-1): How sensitive to color changes (good for texture boundaries)
+- **Depth** (0-1) - Object silhouettes
+- **Normal** (0-1) - Surface details  
+- **Color** (0-1) - Texture boundaries
 
 ### Rendering Layers
-- **Outline Rendering Layer Mask**: Bitmask for which rendering layers to outline
-  - Layer 0 = Mask 1
-  - Layer 1 = Mask 2  
-  - Layer 2 = Mask 4
-  - etc. (powers of 2)
+Uses Unity's **Rendering Layers** (separate from GameObject layers):
+- Layer 0 = Mask 1
+- Layer 1 = Mask 2
+- Layer 2 = Mask 4
 
-## Usage Examples
+## 💡 How It Works
 
-### Basic Setup
-1. Add the Renderer Feature to your URP Renderer Data
-2. Add `OutlineObject` component to objects you want outlined
-3. Make sure the rendering layer mask matches (default setup works out of the box)
+```mermaid
+graph LR
+    A[Scene Objects] --> B[Pass 1: Render Outline Objects]
+    B --> C[Isolated Buffers]
+    C --> D[Pass 2: Sobel Edge Detection]
+    D --> E[Final Composite]
+```
 
-### Multiple Outline Groups
-You can have different groups of outlined objects:
-1. Set some objects to Rendering Layer 0 (OutlineObject component)
-2. Set others to Rendering Layer 1
-3. Use different Renderer Features with different layer masks to control each group separately
+1. **Pass 1**: Render only outline objects to separate textures
+2. **Pass 2**: Apply Sobel edge detection and composite back
 
-### Runtime Control
+## 🎮 Runtime API
+
 ```csharp
-// Control individual objects
+// Basic control
 OutlineObject outline = GetComponent<OutlineObject>();
 outline.SetOutlineEnabled(true);
-outline.SetOutlineRenderingLayer(1); // Change to rendering layer 1
+outline.SetOutlineRenderingLayer(1);
 
-// Check if object is currently outlined
+// Check status
 bool isOutlined = outline.IsCurrentlyOutlined();
 ```
 
-## Technical Details
+## 🔧 Troubleshooting
 
-- **Algorithm**: Sobel edge detection with 3x3 kernel
-- **Rendering**: Two-pass approach with rendering layer filtering
-- **Buffers Used**: Separate color, depth, and normal textures for outline objects
-- **Performance**: Efficient culling - only outline objects are processed
-- **Compatibility**: Unity URP 12.0+
-- **Platform Support**: All platforms supported by URP
+| Issue | Solution |
+|-------|----------|
+| No outlines visible | Check URP settings, rendering layer masks, and sensitivity values |
+| Wrong objects outlined | Verify rendering layer settings on OutlineObject components |
+| Outlines too thick/thin | Adjust **Outline Thickness** parameter |
+| Performance issues | Reduce thickness, use fewer outlined objects |
 
-## Rendering Layers vs GameObject Layers
+## 🎯 Why Rendering Layers?
 
-**GameObject Layers** (0-31):
-- Used for collisions, culling, lighting, etc.
-- Limited to 32 layers total
-- Affects many Unity systems
+**GameObject Layers** → Collisions, culling, lighting  
+**Rendering Layers** → Visual effects only
 
-**Rendering Layers** (0-31):
-- Used only for rendering decisions
-- Separate from GameObject layers
-- Perfect for outline systems
-- Won't interfere with collisions or other systems
+This keeps your collision detection clean while giving you powerful outline control!
 
-This system uses **Rendering Layers** so you can keep using GameObject layers for collisions without any conflicts.
+## 📋 Requirements
 
-## Troubleshooting
+- Unity 2022.3+
+- Universal Render Pipeline 12.0+
+- Depth Texture enabled
+- Opaque Texture enabled
 
-**No outlines visible:**
-- Check that the OutlineObject component is added to your objects
-- Verify the Rendering Layer Mask in the Renderer Feature matches the layer set in OutlineObject
-- Check that Depth Texture is enabled in URP settings
-- Adjust sensitivity values (try higher values)
+## 🤝 Contributing
 
-**Outlines on wrong objects:**
-- Check the Rendering Layer settings on your OutlineObject components
-- Verify the Rendering Layer Mask in the Renderer Feature
-- Make sure you're not accidentally setting rendering layers elsewhere
+Found a bug or have an improvement? Feel free to open an issue or submit a PR!
 
-**Outlines too thick/thin:**
-- Adjust the **Outline Thickness** parameter
-- Lower values = thinner outlines, higher values = thicker outlines
+---
 
-**Too many/few edges detected:**
-- Fine-tune the **Sensitivity** parameters
-- Depth Sensitivity: Controls object silhouettes
-- Normal Sensitivity: Controls surface detail edges  
-- Color Sensitivity: Controls texture/material boundaries
-
-**Performance issues:**
-- Reduce **Outline Thickness** to sample fewer pixels
-- Use fewer objects with OutlineObject components
-- Consider using multiple rendering layers for different LOD levels 
+<div align="center">
+  <strong>Made with ❤️ for the Unity community</strong>
+</div> 
