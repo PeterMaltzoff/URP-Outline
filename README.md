@@ -10,10 +10,9 @@
 
 - 🎯 **Selective Outlining** - Only outline what you want
 - ⚡ **Performance Optimized** - Two-pass rendering with smart culling
-- 🎨 **Highly Configurable** - Fine-tune depth, normal, and color sensitivity
 - 🔧 **No Material Changes** - Works with any existing materials
 - 🎮 **Runtime Control** - Enable/disable outlines dynamically
-- 🚀 **Modern URP Integration** - Built for Universal Render Pipeline
+- 🚀 **URP Integration** - Built for Universal Render Pipeline
 
 ## 🚀 Quick Start
 
